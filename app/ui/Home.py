@@ -12,12 +12,21 @@ if str(ROOT_DIR) not in sys.path:
 
 from dbal.cashflows import CashFlow, generate_fixed_rate_bullet_cashflows  # noqa: E402
 from dbal.data import load_deals_csv  # noqa: E402
-from dbal.metrics import FtpIncomeResult, calculate_ftp_income  # noqa: E402
+from dbal.metrics import FtpIncomeResult, calculate_ftp_income, ets_rate_for_deal  # noqa: E402
 from dbal.products import Deal  # noqa: E402
 
 
 def _deals_frame(deals: list[Deal]) -> pd.DataFrame:
     rows = [deal.model_dump(mode="json") for deal in deals]
+    return pd.DataFrame(rows)
+
+
+def _deals_with_ets_frame(deals: list[Deal], as_of: date) -> pd.DataFrame:
+    rows = []
+    for deal in deals:
+        row = deal.model_dump(mode="json")
+        row["ets_rate"] = _format_rate(ets_rate_for_deal(deal, as_of))
+        rows.append(row)
     return pd.DataFrame(rows)
 
 
@@ -37,6 +46,7 @@ def _ftp_frame(results: list[FtpIncomeResult]) -> pd.DataFrame:
     frame = pd.DataFrame(rows)
     for column in ["customer_interest", "transfer_interest", "chpda", "chpdp", "chpdr"]:
         frame[column] = frame[column].map(_format_decimal)
+    frame["weighted_ets_rate"] = frame["weighted_ets_rate"].map(_format_rate)
     return frame
 
 
@@ -44,6 +54,10 @@ def _format_decimal(value: object) -> str:
     if isinstance(value, Decimal):
         return f"{value:,.2f}"
     return str(value)
+
+
+def _format_rate(value: Decimal) -> str:
+    return f"{value * Decimal('100'):.2f}%"
 
 
 st.set_page_config(page_title="Dynamic Balance", layout="wide")
@@ -75,7 +89,7 @@ left, right = st.columns(2)
 
 with left:
     st.subheader("Sample portfolio")
-    st.dataframe(_deals_frame(deals), use_container_width=True, hide_index=True)
+    st.dataframe(_deals_with_ets_frame(deals, as_of), use_container_width=True, hide_index=True)
 
 with right:
     st.subheader("FTP income by block")

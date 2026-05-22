@@ -14,7 +14,6 @@ def test_at_maturity_asset_cashflow_is_positive() -> None:
         currency="KZT",
         principal=Decimal("1000000"),
         annual_rate=Decimal("0.12"),
-        ftp_rate=Decimal("0.09"),
         business_block=BusinessBlock.KSB,
         start_date=date(2026, 1, 1),
         maturity_date=date(2027, 1, 1),
@@ -37,7 +36,6 @@ def test_at_maturity_liability_cashflow_is_negative() -> None:
         currency="KZT",
         principal=Decimal("500000"),
         annual_rate=Decimal("0.08"),
-        ftp_rate=Decimal("0.07"),
         business_block=BusinessBlock.TRB,
         start_date=date(2026, 1, 1),
         maturity_date=date(2026, 7, 1),
@@ -60,7 +58,6 @@ def test_monthly_interest_and_principal_at_maturity() -> None:
         currency="USD",
         principal=Decimal("250000"),
         annual_rate=Decimal("0.06"),
-        ftp_rate=Decimal("0.04"),
         business_block=BusinessBlock.KRB,
         start_date=date(2026, 1, 31),
         maturity_date=date(2026, 7, 31),
@@ -88,6 +85,6 @@ def test_load_sample_deals_csv() -> None:
     assert len(deals) == 12
     assert deals[0].deal_id == "RL-MTG-001"
     assert deals[0].principal == Decimal("18500000")
-    assert deals[0].ftp_rate == Decimal("0.135")
+    assert deals[0].business_block == BusinessBlock.KRB
     assert sum(1 for deal in deals if deal.balance_side == BalanceSide.ASSET) == 6
     assert sum(1 for deal in deals if deal.balance_side == BalanceSide.LIABILITY) == 6

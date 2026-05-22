@@ -15,7 +15,6 @@ class Deal(BaseModel):
     currency: str = Field(min_length=3, max_length=3)
     principal: Decimal = Field(gt=0)
     annual_rate: Decimal = Field(ge=0)
-    ftp_rate: Decimal = Field(ge=0)
     business_block: BusinessBlock
     start_date: date
     maturity_date: date

@@ -4,6 +4,7 @@ from decimal import Decimal
 from pydantic import BaseModel, ConfigDict
 
 from dbal.cashflows import generate_fixed_rate_bullet_cashflows
+from dbal.metrics.ets import ets_rate_for_deal
 from dbal.products import BalanceSide, BusinessBlock, Deal
 
 
@@ -16,14 +17,17 @@ class FtpIncomeResult(BaseModel):
     chpda: Decimal
     chpdp: Decimal
     chpdr: Decimal
+    weighted_ets_rate: Decimal
 
 
 def calculate_ftp_income(deals: list[Deal], as_of: date) -> list[FtpIncomeResult]:
     rows: dict[BusinessBlock, FtpIncomeResult] = {}
+    principal_weights: dict[BusinessBlock, Decimal] = {}
 
     for deal in deals:
         customer_interest = _sum_interest(deal, as_of, deal.annual_rate)
-        transfer_interest = _sum_interest(deal, as_of, deal.ftp_rate)
+        ets_rate = ets_rate_for_deal(deal, as_of)
+        transfer_interest = _sum_interest(deal, as_of, ets_rate)
 
         if deal.balance_side == BalanceSide.ASSET:
             chpda = customer_interest - transfer_interest
@@ -42,6 +46,9 @@ def calculate_ftp_income(deals: list[Deal], as_of: date) -> list[FtpIncomeResult
             chpda,
             chpdp,
             Decimal("0"),
+            deal.principal,
+            ets_rate,
+            principal_weights,
         )
         _add_to_block(
             rows,
@@ -51,6 +58,9 @@ def calculate_ftp_income(deals: list[Deal], as_of: date) -> list[FtpIncomeResult
             Decimal("0"),
             Decimal("0"),
             chpdr,
+            Decimal("0"),
+            Decimal("0"),
+            principal_weights,
         )
 
     return list(rows.values())
@@ -72,6 +82,9 @@ def _add_to_block(
     chpda: Decimal,
     chpdp: Decimal,
     chpdr: Decimal,
+    principal: Decimal,
+    ets_rate: Decimal,
+    principal_weights: dict[BusinessBlock, Decimal],
 ) -> None:
     previous = rows.get(
         block,
@@ -82,7 +95,16 @@ def _add_to_block(
             chpda=Decimal("0"),
             chpdp=Decimal("0"),
             chpdr=Decimal("0"),
+            weighted_ets_rate=Decimal("0"),
         ),
+    )
+    previous_weight = principal_weights.get(block, Decimal("0"))
+    principal_weight = previous_weight + principal
+    weighted_ets_rate = _weighted_rate(
+        previous.weighted_ets_rate,
+        previous_weight,
+        ets_rate,
+        principal,
     )
     rows[block] = FtpIncomeResult(
         business_block=block,
@@ -91,4 +113,20 @@ def _add_to_block(
         chpda=previous.chpda + chpda,
         chpdp=previous.chpdp + chpdp,
         chpdr=previous.chpdr + chpdr,
+        weighted_ets_rate=weighted_ets_rate if principal_weight > 0 else Decimal("0"),
+    )
+    principal_weights[block] = principal_weight
+
+
+def _weighted_rate(
+    previous_rate: Decimal,
+    previous_weight: Decimal,
+    ets_rate: Decimal,
+    principal: Decimal,
+) -> Decimal:
+    new_weight = previous_weight + principal
+    if new_weight == 0:
+        return Decimal("0")
+    return ((previous_rate * previous_weight + ets_rate * principal) / new_weight).quantize(
+        Decimal("0.0001")
     )
