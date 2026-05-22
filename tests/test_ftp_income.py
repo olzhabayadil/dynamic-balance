@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from dbal.data import load_deals_csv
 from dbal.metrics import calculate_ftp_income
-from dbal.products import BusinessBlock
+from dbal.products.enums import BusinessBlock
 
 
 def test_ftp_income_is_split_between_business_blocks_and_ualm() -> None:
