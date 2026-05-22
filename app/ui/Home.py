@@ -1,12 +1,18 @@
+import sys
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
-from dbal.cashflows import CashFlow, generate_fixed_rate_bullet_cashflows
-from dbal.data import load_deals_csv
-from dbal.products import Deal
+ROOT_DIR = Path(__file__).resolve().parents[2]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from dbal.cashflows import CashFlow, generate_fixed_rate_bullet_cashflows  # noqa: E402
+from dbal.data import load_deals_csv  # noqa: E402
+from dbal.products import Deal  # noqa: E402
 
 
 def _deals_frame(deals: list[Deal]) -> pd.DataFrame:
