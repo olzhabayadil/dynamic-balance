@@ -6,6 +6,14 @@ class BalanceSide(StrEnum):
     LIABILITY = "liability"
 
 
+class BusinessBlock(StrEnum):
+    KSB = "KSB"
+    KRB = "KRB"
+    TRB = "TRB"
+    UK = "UK"
+    UALM = "UALM"
+
+
 class ProductType(StrEnum):
     FIXED_RATE_LOAN = "fixed_rate_loan"
     FIXED_RATE_DEPOSIT = "fixed_rate_deposit"

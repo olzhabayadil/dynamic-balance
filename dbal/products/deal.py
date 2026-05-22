@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from dbal.products.enums import BalanceSide, PaymentFrequency, ProductType
+from dbal.products.enums import BalanceSide, BusinessBlock, PaymentFrequency, ProductType
 
 
 class Deal(BaseModel):
@@ -15,6 +15,8 @@ class Deal(BaseModel):
     currency: str = Field(min_length=3, max_length=3)
     principal: Decimal = Field(gt=0)
     annual_rate: Decimal = Field(ge=0)
+    ftp_rate: Decimal = Field(ge=0)
+    business_block: BusinessBlock
     start_date: date
     maturity_date: date
     payment_frequency: PaymentFrequency = PaymentFrequency.AT_MATURITY
@@ -23,6 +25,21 @@ class Deal(BaseModel):
     def validate_dates(self) -> "Deal":
         if self.maturity_date <= self.start_date:
             msg = "maturity_date must be after start_date"
+            raise ValueError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def validate_block_can_own_product(self) -> "Deal":
+        allowed_blocks = {
+            ProductType.FIXED_RATE_LOAN: {BusinessBlock.KSB, BusinessBlock.KRB, BusinessBlock.UK},
+            ProductType.FIXED_RATE_DEPOSIT: {
+                BusinessBlock.KSB,
+                BusinessBlock.TRB,
+                BusinessBlock.UK,
+            },
+        }[self.product_type]
+        if self.business_block not in allowed_blocks:
+            msg = f"{self.business_block} cannot own {self.product_type}"
             raise ValueError(msg)
         return self
 
