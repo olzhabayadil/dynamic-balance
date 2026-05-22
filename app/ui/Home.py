@@ -1,6 +1,6 @@
 import sys
 from datetime import date
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 import pandas as pd
@@ -51,13 +51,28 @@ def _ftp_frame(results: list[FtpIncomeResult]) -> pd.DataFrame:
 
 
 def _format_decimal(value: object) -> str:
-    if isinstance(value, Decimal):
-        return f"{value:,.2f}"
+    decimal_value = _to_decimal(value)
+    if decimal_value is not None:
+        return f"{decimal_value:,.2f}"
     return str(value)
 
 
-def _format_rate(value: Decimal) -> str:
-    return f"{value * Decimal('100'):.2f}%"
+def _format_rate(value: object) -> str:
+    decimal_value = _to_decimal(value)
+    if decimal_value is None:
+        return str(value)
+    return f"{decimal_value * Decimal('100'):.2f}%"
+
+
+def _to_decimal(value: object) -> Decimal | None:
+    if isinstance(value, Decimal):
+        return value
+    if value is None:
+        return None
+    try:
+        return Decimal(str(value))
+    except (InvalidOperation, ValueError):
+        return None
 
 
 st.set_page_config(page_title="Dynamic Balance", layout="wide")
