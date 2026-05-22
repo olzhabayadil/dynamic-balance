@@ -14,6 +14,12 @@ Initial normalized deal schema for fixed-rate bullet instruments.
 | `start_date` | date | yes | Deal start date. |
 | `maturity_date` | date | yes | Final contractual maturity date. |
 | `payment_frequency` | enum | yes | Interest payment frequency. |
+| `risk_weight` | decimal | yes | Capital adequacy risk weight. |
+| `hqla_haircut` | decimal | yes | HQLA haircut; `1.00` means not HQLA-eligible. |
+| `lcr_inflow_rate` | decimal | yes | 30-day stressed inflow rate. |
+| `lcr_outflow_rate` | decimal | yes | 30-day stressed outflow rate. |
+| `nsfr_asf_factor` | decimal | yes | Available stable funding factor. |
+| `nsfr_rsf_factor` | decimal | yes | Required stable funding factor. |
 
 Supported enum values:
 

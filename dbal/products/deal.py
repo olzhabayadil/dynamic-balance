@@ -20,6 +20,12 @@ class Deal(BaseModel):
     start_date: date
     maturity_date: date
     payment_frequency: PaymentFrequency = PaymentFrequency.AT_MATURITY
+    risk_weight: Decimal = Field(default=Decimal("0"), ge=0)
+    hqla_haircut: Decimal = Field(default=Decimal("1"), ge=0, le=1)
+    lcr_inflow_rate: Decimal = Field(default=Decimal("0"), ge=0, le=1)
+    lcr_outflow_rate: Decimal = Field(default=Decimal("0"), ge=0, le=1)
+    nsfr_asf_factor: Decimal = Field(default=Decimal("0"), ge=0, le=1)
+    nsfr_rsf_factor: Decimal = Field(default=Decimal("0"), ge=0, le=1)
 
     @model_validator(mode="after")
     def validate_dates(self) -> "Deal":

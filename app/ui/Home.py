@@ -12,7 +12,13 @@ if str(ROOT_DIR) not in sys.path:
 
 from dbal.cashflows import CashFlow, generate_fixed_rate_bullet_cashflows  # noqa: E402
 from dbal.data import load_deals_csv  # noqa: E402
-from dbal.metrics import FtpIncomeResult, calculate_ftp_income, ets_rate_for_deal  # noqa: E402
+from dbal.metrics import (  # noqa: E402
+    FtpIncomeResult,
+    RegulatoryMetrics,
+    calculate_ftp_income,
+    calculate_regulatory_metrics,
+    ets_rate_for_deal,
+)
 from dbal.products.deal import Deal  # noqa: E402
 
 
@@ -48,6 +54,31 @@ def _ftp_frame(results: list[FtpIncomeResult]) -> pd.DataFrame:
         frame[column] = frame[column].map(_format_decimal)
     frame["weighted_ets_rate"] = frame["weighted_ets_rate"].map(_format_rate)
     return frame
+
+
+def _regulatory_frame(metrics: RegulatoryMetrics) -> pd.DataFrame:
+    rows = [
+        ("Capital", metrics.capital, "amount"),
+        ("RWA", metrics.rwa, "amount"),
+        ("Capital adequacy", metrics.capital_adequacy_ratio, "ratio"),
+        ("HQLA", metrics.hqla, "amount"),
+        ("LCR outflows", metrics.lcr_outflows, "amount"),
+        ("LCR inflows", metrics.lcr_inflows, "amount"),
+        ("Net cash outflows", metrics.net_cash_outflows, "amount"),
+        ("LCR", metrics.lcr, "ratio"),
+        ("Available stable funding", metrics.available_stable_funding, "amount"),
+        ("Required stable funding", metrics.required_stable_funding, "amount"),
+        ("NSFR", metrics.nsfr, "ratio"),
+    ]
+    return pd.DataFrame(
+        [
+            {
+                "metric": name,
+                "value": _format_rate(value) if value_type == "ratio" else _format_decimal(value),
+            }
+            for name, value, value_type in rows
+        ]
+    )
 
 
 def _format_decimal(value: object) -> str:
@@ -88,6 +119,7 @@ cashflows = [
     for cashflow in generate_fixed_rate_bullet_cashflows(deal, as_of=as_of)
 ]
 ftp_results = calculate_ftp_income(deals, as_of=as_of)
+regulatory_metrics = calculate_regulatory_metrics(deals)
 
 assets = sum((deal.principal for deal in deals if deal.balance_side == "asset"), Decimal("0"))
 liabilities = sum(
@@ -109,6 +141,9 @@ with left:
 with right:
     st.subheader("FTP income by block")
     st.dataframe(_ftp_frame(ftp_results), use_container_width=True, hide_index=True)
+
+st.subheader("Capital / LCR / NSFR")
+st.dataframe(_regulatory_frame(regulatory_metrics), use_container_width=True, hide_index=True)
 
 st.subheader("Generated cash flows")
 st.dataframe(_cashflows_frame(cashflows), use_container_width=True, hide_index=True)

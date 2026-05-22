@@ -84,9 +84,9 @@ def test_monthly_interest_and_principal_at_maturity() -> None:
 def test_load_sample_deals_csv() -> None:
     deals = load_deals_csv("sample_data/fixed_rate_deals.csv")
 
-    assert len(deals) == 12
+    assert len(deals) == 14
     assert deals[0].deal_id == "RL-MTG-001"
     assert deals[0].principal == Decimal("18500000")
     assert deals[0].business_block == BusinessBlock.KRB
-    assert sum(1 for deal in deals if deal.balance_side == BalanceSide.ASSET) == 6
+    assert sum(1 for deal in deals if deal.balance_side == BalanceSide.ASSET) == 8
     assert sum(1 for deal in deals if deal.balance_side == BalanceSide.LIABILITY) == 6

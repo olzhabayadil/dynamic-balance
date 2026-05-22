@@ -64,3 +64,37 @@ Sign convention:
 - asset ЕТС interest is positive and treated as transfer expense for the lending block;
 - liability ЕТС interest is negative and treated as transfer income for the funding block;
 - `UALM.chpdr` is the sum of signed transfer interest across business blocks.
+
+## Capital Adequacy, LCR, NSFR v0
+
+The current implementation is a transparent management prototype. It is not yet the final
+NBK regulatory methodology.
+
+Inputs are set at deal level:
+
+| Field | Meaning |
+|---|---|
+| `risk_weight` | Capital adequacy risk weight |
+| `hqla_haircut` | HQLA haircut; `1.00` means not eligible as HQLA |
+| `lcr_inflow_rate` | 30-day stressed inflow rate |
+| `lcr_outflow_rate` | 30-day stressed outflow rate |
+| `nsfr_asf_factor` | Available stable funding factor |
+| `nsfr_rsf_factor` | Required stable funding factor |
+
+Formulas:
+
+```text
+RWA = sum(asset principal * risk_weight)
+Capital adequacy = capital / RWA
+
+HQLA = sum(asset principal * (1 - hqla_haircut))
+LCR outflows = sum(liability principal * lcr_outflow_rate)
+LCR inflows = sum(asset principal * lcr_inflow_rate)
+Capped inflows = min(LCR inflows, 75% * LCR outflows)
+Net cash outflows = LCR outflows - capped inflows
+LCR = HQLA / Net cash outflows
+
+ASF = capital + sum(liability principal * nsfr_asf_factor)
+RSF = sum(asset principal * nsfr_rsf_factor)
+NSFR = ASF / RSF
+```
