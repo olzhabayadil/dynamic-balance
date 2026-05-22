@@ -3,8 +3,9 @@ from decimal import Decimal
 
 from dbal.cashflows import generate_fixed_rate_bullet_cashflows
 from dbal.data import load_deals_csv
+from dbal.org import BusinessBlock
 from dbal.products.deal import Deal
-from dbal.products.enums import BalanceSide, BusinessBlock, PaymentFrequency, ProductType
+from dbal.products.enums import BalanceSide, PaymentFrequency, ProductType
 
 
 def test_at_maturity_asset_cashflow_is_positive() -> None:

@@ -5,8 +5,9 @@ from pydantic import BaseModel, ConfigDict
 
 from dbal.cashflows import generate_fixed_rate_bullet_cashflows
 from dbal.metrics.ets import ets_rate_for_deal
+from dbal.org import BusinessBlock
 from dbal.products.deal import Deal
-from dbal.products.enums import BalanceSide, BusinessBlock
+from dbal.products.enums import BalanceSide
 
 
 class FtpIncomeResult(BaseModel):

@@ -6,14 +6,6 @@ class BalanceSide(str, Enum):
     LIABILITY = "liability"
 
 
-class BusinessBlock(str, Enum):
-    KSB = "KSB"
-    KRB = "KRB"
-    TRB = "TRB"
-    UK = "UK"
-    UALM = "UALM"
-
-
 class ProductType(str, Enum):
     FIXED_RATE_LOAN = "fixed_rate_loan"
     FIXED_RATE_DEPOSIT = "fixed_rate_deposit"

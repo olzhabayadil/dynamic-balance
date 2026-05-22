@@ -2,8 +2,9 @@ from datetime import date
 from decimal import Decimal
 
 from dbal.metrics import ets_rate_for_deal, interpolate_ets_rate
+from dbal.org import BusinessBlock
 from dbal.products.deal import Deal
-from dbal.products.enums import BalanceSide, BusinessBlock, PaymentFrequency, ProductType
+from dbal.products.enums import BalanceSide, PaymentFrequency, ProductType
 
 
 def test_interpolate_ets_rate_between_1y_and_2y() -> None:

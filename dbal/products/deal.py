@@ -3,7 +3,8 @@ from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from dbal.products.enums import BalanceSide, BusinessBlock, PaymentFrequency, ProductType
+from dbal.org import BusinessBlock
+from dbal.products.enums import BalanceSide, PaymentFrequency, ProductType
 
 
 class Deal(BaseModel):
