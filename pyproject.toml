@@ -1,0 +1,48 @@
+[project]
+name = "dynamic-balance"
+version = "0.1.0"
+description = "ALM dynamic balance modeling toolkit."
+requires-python = ">=3.12"
+dependencies = [
+    "duckdb>=1.2.0",
+    "numpy>=2.0.0",
+    "openpyxl>=3.1.0",
+    "pandas>=2.2.0",
+    "plotly>=5.24.0",
+    "pydantic>=2.9.0",
+    "pyarrow>=18.0.0",
+    "python-dotenv>=1.0.0",
+    "streamlit>=1.40.0",
+    "xlsxwriter>=3.2.0",
+    "pyyaml>=6.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.13.0",
+    "pytest>=8.3.0",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.8.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["dbal*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.mypy]
+python_version = "3.12"
+packages = ["dbal"]
+strict = true
+warn_return_any = true
+warn_unused_configs = true
