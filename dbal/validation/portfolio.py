@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
-from dbal.products import Deal
+from dbal.products.deal import Deal
 
 
 class PortfolioValidationIssue(BaseModel):

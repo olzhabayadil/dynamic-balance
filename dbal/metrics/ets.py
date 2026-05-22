@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict
 
-from dbal.products import Deal
+from dbal.products.deal import Deal
 
 DAYS_IN_YEAR = Decimal("365")
 

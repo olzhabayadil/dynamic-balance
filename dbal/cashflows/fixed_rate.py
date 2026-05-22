@@ -3,7 +3,8 @@ from datetime import date
 from decimal import Decimal
 
 from dbal.cashflows.models import CashFlow, CashFlowType
-from dbal.products import BalanceSide, Deal, PaymentFrequency
+from dbal.products.deal import Deal
+from dbal.products.enums import BalanceSide, PaymentFrequency
 
 DAYS_IN_YEAR = Decimal("365")
 

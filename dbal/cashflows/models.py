@@ -1,11 +1,11 @@
 from datetime import date
 from decimal import Decimal
-from enum import StrEnum
+from enum import Enum
 
 from pydantic import BaseModel, ConfigDict
 
 
-class CashFlowType(StrEnum):
+class CashFlowType(str, Enum):
     INTEREST = "interest"
     PRINCIPAL = "principal"
     PRINCIPAL_AND_INTEREST = "principal_and_interest"

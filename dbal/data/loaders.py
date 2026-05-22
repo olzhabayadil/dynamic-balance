@@ -3,7 +3,7 @@ from typing import Any
 
 import pandas as pd  # type: ignore[import-untyped]
 
-from dbal.products import Deal
+from dbal.products.deal import Deal
 
 
 def load_deals_csv(path: str | Path) -> list[Deal]:

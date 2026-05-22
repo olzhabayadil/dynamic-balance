@@ -13,7 +13,7 @@ if str(ROOT_DIR) not in sys.path:
 from dbal.cashflows import CashFlow, generate_fixed_rate_bullet_cashflows  # noqa: E402
 from dbal.data import load_deals_csv  # noqa: E402
 from dbal.metrics import FtpIncomeResult, calculate_ftp_income, ets_rate_for_deal  # noqa: E402
-from dbal.products import Deal  # noqa: E402
+from dbal.products.deal import Deal  # noqa: E402
 
 
 def _deals_frame(deals: list[Deal]) -> pd.DataFrame:
