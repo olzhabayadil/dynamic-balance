@@ -1,12 +1,12 @@
-from enum import StrEnum
+from enum import Enum
 
 
-class BalanceSide(StrEnum):
+class BalanceSide(str, Enum):
     ASSET = "asset"
     LIABILITY = "liability"
 
 
-class BusinessBlock(StrEnum):
+class BusinessBlock(str, Enum):
     KSB = "KSB"
     KRB = "KRB"
     TRB = "TRB"
@@ -14,12 +14,12 @@ class BusinessBlock(StrEnum):
     UALM = "UALM"
 
 
-class ProductType(StrEnum):
+class ProductType(str, Enum):
     FIXED_RATE_LOAN = "fixed_rate_loan"
     FIXED_RATE_DEPOSIT = "fixed_rate_deposit"
 
 
-class PaymentFrequency(StrEnum):
+class PaymentFrequency(str, Enum):
     AT_MATURITY = "at_maturity"
     MONTHLY = "monthly"
     QUARTERLY = "quarterly"
